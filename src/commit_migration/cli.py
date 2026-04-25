@@ -66,8 +66,16 @@ def render_text(report: dict) -> str:
         lines.append(f"- [{item['status']}] {item['source']}")
         if item["target"]:
             lines.append(f"    target: {item['target']}")
-        for candidate in item["candidates"]:
-            lines.append(f"    candidate: {candidate}")
+        if item.get("candidate_details"):
+            for candidate in item["candidate_details"]:
+                lines.append(
+                    f"    candidate: {candidate['path']} (score={candidate['score']}, confidence={candidate['confidence']})"
+                )
+                for reason in candidate["reasons"]:
+                    lines.append(f"      reason: {reason}")
+        else:
+            for candidate in item["candidates"]:
+                lines.append(f"    candidate: {candidate}")
         for note in item["notes"]:
             lines.append(f"    note: {note}")
 

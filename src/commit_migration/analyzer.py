@@ -6,12 +6,13 @@ from collections import Counter
 from pathlib import Path
 
 from .git_ops import current_branch, run_git
-from .models import AnalysisSelection, FollowupItem, MappingEntry
+from .models import AnalysisSelection, CandidateMatch, FollowupItem, MappingEntry
 
 
 PACKAGE_SEGMENT_PATTERN = re.compile(r"^(com|org|io|net)$")
 RESOURCE_TOKEN_PATTERN = re.compile(r"R\.(\w+)\.([A-Za-z0-9_]+)|@(\w+)/([A-Za-z0-9_]+)")
 VALUE_NAME_PATTERN = re.compile(r'<(?:\w+:)?(?:item|color|string|style|dimen|integer|bool|array|string-array|plurals)\b[^>]*\bname="([A-Za-z0-9_]+)"')
+IDENTIFIER_TOKEN_PATTERN = re.compile(r"[A-Z]+(?=[A-Z][a-z]|\d|_|$)|[A-Z]?[a-z]+|\d+")
 DEFAULT_HINT_LOCATIONS = (
     Path(".commit-migration") / "mapping_hints.json",
     Path(".codex") / "commit-migration" / "mapping_hints.json",
@@ -132,6 +133,77 @@ def suffix_overlap(source: Path, candidate: Path) -> int:
     return overlap
 
 
+def split_identifier_tokens(name: str) -> list[str]:
+    normalized = name.replace("-", "_")
+    chunks = [part for part in normalized.split("_") if part]
+    tokens: list[str] = []
+    for chunk in chunks:
+        matches = IDENTIFIER_TOKEN_PATTERN.findall(chunk)
+        if matches:
+            tokens.extend(token.lower() for token in matches)
+        else:
+            tokens.append(chunk.lower())
+    return tokens
+
+
+def describe_tail(path: Path, count: int) -> str:
+    if not path.parts:
+        return ""
+    return "/".join(path.parts[-count:])
+
+
+def confidence_from_score(score: int) -> str:
+    if score >= 75:
+        return "high"
+    if score >= 45:
+        return "medium"
+    return "low"
+
+
+def build_candidate_match(source_suffix: Path, candidate_rel: str) -> CandidateMatch | None:
+    candidate_path = Path(candidate_rel)
+    source_name = source_suffix.stem
+    candidate_name = candidate_path.stem
+    source_tokens = set(split_identifier_tokens(source_name))
+    candidate_tokens = set(split_identifier_tokens(candidate_name))
+    shared_tokens = sorted(source_tokens & candidate_tokens)
+    dir_overlap = suffix_overlap(source_suffix.parent, candidate_path.parent)
+
+    score = 0
+    reasons: list[str] = []
+
+    if candidate_path.name == source_suffix.name:
+        score += 70
+        reasons.append("Exact filename match.")
+    elif candidate_path.suffix == source_suffix.suffix:
+        score += 10
+        reasons.append("Same language or file extension.")
+
+    if dir_overlap:
+        dir_score = min(24, dir_overlap * 8)
+        score += dir_score
+        reasons.append(f"Shared directory suffix: {describe_tail(candidate_path.parent, dir_overlap)}.")
+
+    if shared_tokens:
+        token_score = min(24, len(shared_tokens) * 8)
+        score += token_score
+        reasons.append(f"Shared identifier tokens: {', '.join(shared_tokens)}.")
+
+    if candidate_path.parent.name and candidate_path.parent.name == source_suffix.parent.name:
+        score += 8
+        reasons.append(f"Same leaf directory: {candidate_path.parent.name}.")
+
+    if score == 0:
+        return None
+
+    return CandidateMatch(
+        path=candidate_rel,
+        score=score,
+        confidence=confidence_from_score(score),
+        reasons=reasons,
+    )
+
+
 def collect_selection(
     repo_root: Path,
     commits: list[str] | None = None,
@@ -178,14 +250,35 @@ def collect_selection(
     raise ValueError("One of commits, range_expr, or branch is required.")
 
 
-def search_code_candidates(repo_root: Path, file_name: str) -> list[str]:
-    candidates: list[str] = []
+def search_code_candidates(repo_root: Path, source_suffix: Path) -> list[CandidateMatch]:
+    exact: list[CandidateMatch] = []
+    scored: list[CandidateMatch] = []
     for base in code_roots(repo_root):
         if not base.exists():
             continue
-        for match in base.rglob(file_name):
-            candidates.append(match.relative_to(repo_root).as_posix())
-    return candidates
+        for match in base.rglob(f"*{source_suffix.suffix}"):
+            candidate_rel = match.relative_to(repo_root).as_posix()
+            candidate = build_candidate_match(source_suffix, candidate_rel)
+            if not candidate:
+                continue
+            if Path(candidate_rel).name == source_suffix.name:
+                exact.append(candidate)
+            else:
+                scored.append(candidate)
+
+    ranked = sorted(
+        exact + scored,
+        key=lambda item: (item.score, item.confidence == "high", item.path),
+        reverse=True,
+    )
+    deduped: list[CandidateMatch] = []
+    seen: set[str] = set()
+    for item in ranked:
+        if item.path in seen:
+            continue
+        seen.add(item.path)
+        deduped.append(item)
+    return deduped[:6]
 
 
 def search_resource_candidates(repo_root: Path, name: str) -> list[str]:
@@ -285,16 +378,14 @@ def map_file(repo_root: Path, rel_path: str, package_roots: list[str], hints: di
                 notes=["Matched by package-root replacement."],
             )
 
-    file_name = Path(rel_path).name
-    raw_candidates = search_code_candidates(repo_root, file_name)
-    scored = sorted(raw_candidates, key=lambda item: suffix_overlap(Path(suffix), Path(item)), reverse=True)
-    candidates = scored[:6]
+    candidate_matches = search_code_candidates(repo_root, Path(suffix))
     return MappingEntry(
         source=rel_path,
         kind=kind,
-        status="review" if candidates else "missing",
-        candidates=candidates,
-        notes=["Need class or path remap."] if candidates else ["No matching filename found in current repository."],
+        status="review" if candidate_matches else "missing",
+        candidates=[item.path for item in candidate_matches],
+        candidate_details=candidate_matches,
+        notes=["Need class or path remap with confidence-ranked candidates."] if candidate_matches else ["No matching code candidate found in current repository."],
     )
 
 
