@@ -5,10 +5,7 @@
       "args": [
         "-m",
         "commit_migration.mcp_server"
-      ],
-      "env": {
-        "PYTHONPATH": "../../src"
-      }
+      ]
     }
   }
 }

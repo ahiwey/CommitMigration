@@ -212,6 +212,7 @@ These tools are designed to help an AI agent do the final migration safely rathe
 
 - [INSTALL.md](./INSTALL.md)
 - [USAGE.md](./USAGE.md)
+- [ROADMAP_v0.2.0.md](./ROADMAP_v0.2.0.md)
 - [PUBLISHING.md](./PUBLISHING.md)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [CHANGELOG.md](./CHANGELOG.md)

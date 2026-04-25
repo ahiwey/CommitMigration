@@ -18,8 +18,8 @@
     "porting",
     "mcp"
   ],
-  "skills": "../skills/",
-  "mcpServers": "../.mcp.json",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Commit Migration",
     "shortDescription": "Port Android commits across branches with mapping-aware analysis",
@@ -39,8 +39,8 @@
       "Map package and resource changes from commit range A..B"
     ],
     "brandColor": "#1F6FEB",
-    "composerIcon": "../assets/commit-migration-small.svg",
-    "logo": "../assets/commit-migration.svg",
+    "composerIcon": "./assets/commit-migration-small.svg",
+    "logo": "./assets/commit-migration.svg",
     "screenshots": []
   }
 }
