@@ -1,10 +1,31 @@
+[![Release](https://img.shields.io/github/v/release/ahiwey/CommitMigration)](https://github.com/ahiwey/CommitMigration/releases)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/ahiwey/CommitMigration)](./LICENSE)
+
 # Commit Migration
 
 Android commit migration toolkit for AI-assisted branch porting.
 
-`Commit Migration` is a generic Android migration toolkit first. It analyzes a commit, a commit range, or a branch diff and helps an AI apply equivalent changes onto the current branch while adapting Android-specific references such as package roots, class paths, resources, manifest references, and XML wiring.
+`Commit Migration` helps developers and AI agents analyze a commit, a commit range, or a branch diff and then port the equivalent Android changes onto the current branch with package-aware, class-aware, and resource-aware adaptation.
 
-The Codex plugin, skill, and MCP registration are still supported, but they now live under an optional integration layer instead of defining the repository root.
+It is built as a generic toolkit first:
+
+- use the core package and CLI for repository analysis
+- enable the MCP server only when you need AI tool integration
+- opt into the Codex-facing plugin and skill bundle only when your environment supports it
+
+## Why It Exists
+
+Applying changes across Android brand forks is rarely a clean `cherry-pick`.
+
+Common migration blockers include:
+
+- different package roots
+- same-responsibility classes with different names
+- different resource names
+- manifest, navigation, provider, and XML references that need follow-up adaptation
+
+`Commit Migration` is designed to surface those mappings early so the final migration can be deliberate instead of patch-first.
 
 ## Current Scope
 
@@ -13,6 +34,40 @@ The Codex plugin, skill, and MCP registration are still supported, but they now 
 - `res/`, `AndroidManifest.xml`, navigation XML, provider and authority references
 - package-root, path, and resource mapping suggestions
 - core CLI and analysis engine, plus optional AI integrations
+
+## Quick Start
+
+### 1. Install the package
+
+```powershell
+git clone https://github.com/ahiwey/CommitMigration.git
+cd CommitMigration
+pip install -e .
+```
+
+### 2. Analyze a commit against a target Android repository
+
+```powershell
+commit-migration analyze --repo D:\Project\Android\app_android_2025 --commit 45959162
+```
+
+### 3. Initialize repository hints if your project has brand-specific mappings
+
+```powershell
+commit-migration init-hints --repo D:\Project\Android\app_android_2025
+```
+
+This creates:
+
+```text
+.commit-migration/mapping_hints.json
+```
+
+### 4. Optional: install MCP support
+
+```powershell
+pip install -e ".[mcp]"
+```
 
 ## What This Repository Provides
 
@@ -23,9 +78,9 @@ The Codex plugin, skill, and MCP registration are still supported, but they now 
 - an optional Codex integration package with plugin manifest, skill, and icons
 - publishing and contribution docs for GitHub release prep
 
-## Example User Requests
+## Natural-Language Requests
 
-After installation, users can naturally say:
+After the integration layer is installed in an AI environment, users can naturally say:
 
 - `Apply 45959162 to the current branch`
 - `Migrate commit 45959162`
@@ -40,6 +95,20 @@ The default behavior should be:
 - do not automatically `checkout`, `cherry-pick`, or `rebase`
 - prefer equivalent migration plus adaptation over raw patch replay
 
+## Choose Your Mode
+
+### CLI only
+
+Use this if you want repository analysis and reports without AI-specific integration.
+
+### CLI + MCP
+
+Use this if your AI environment can call MCP tools and you want structured read-only analysis results.
+
+### Codex integration
+
+Use this if you want the optional plugin manifest, skill, and MCP registration bundle under [integrations/codex](./integrations/codex/README.md).
+
 ## Repository Layout
 
 ```text
@@ -52,26 +121,6 @@ integrations/codex/.mcp.json          Codex MCP registration
 integrations/codex/skills/            Codex skill and references
 integrations/codex/assets/            Codex plugin icons
 ```
-
-## Installation Notes
-
-For the generic CLI and Python package:
-
-```powershell
-cd D:\Project\Android\CommitMigration
-pip install -e .
-```
-
-After that, these commands should work:
-
-```powershell
-commit-migration analyze --help
-python -m commit_migration analyze --help
-```
-
-If you also want the Codex-specific skill and plugin integration, use the files under [integrations/codex](./integrations/codex/README.md).
-
-See [PUBLISHING.md](./PUBLISHING.md) for the publish checklist.
 
 ## CLI Usage
 
@@ -111,18 +160,6 @@ You can also invoke the package module directly:
 
 ```powershell
 python -m commit_migration analyze --repo D:\Project\Android\app_android_2025 --commit 45959162
-```
-
-### Initialize hints in a target repository
-
-```powershell
-commit-migration init-hints --repo D:\Project\Android\app_android_2025
-```
-
-By default this writes:
-
-```text
-.commit-migration/mapping_hints.json
 ```
 
 ### Run a basic repository doctor check
@@ -174,6 +211,7 @@ These tools are designed to help an AI agent do the final migration safely rathe
 ## Additional Docs
 
 - [INSTALL.md](./INSTALL.md)
+- [USAGE.md](./USAGE.md)
 - [PUBLISHING.md](./PUBLISHING.md)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [CHANGELOG.md](./CHANGELOG.md)
