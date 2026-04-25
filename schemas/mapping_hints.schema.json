@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ahiwey/commit-migration/schemas/mapping_hints.schema.json",
+  "$id": "https://github.com/ahiwey/CommitMigration/schemas/mapping_hints.schema.json",
   "title": "Commit Migration Mapping Hints",
   "type": "object",
   "additionalProperties": false,

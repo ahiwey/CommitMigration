@@ -7,8 +7,8 @@
     "email": "ahiwey@users.noreply.github.com",
     "url": "https://github.com/ahiwey"
   },
-  "homepage": "https://github.com/ahiwey/commit-migration",
-  "repository": "https://github.com/ahiwey/commit-migration",
+  "homepage": "https://github.com/ahiwey/CommitMigration",
+  "repository": "https://github.com/ahiwey/CommitMigration",
   "license": "MIT",
   "keywords": [
     "android",
@@ -30,9 +30,9 @@
       "Interactive",
       "Write"
     ],
-    "websiteURL": "https://github.com/ahiwey/commit-migration",
-    "privacyPolicyURL": "https://github.com/ahiwey/commit-migration/blob/main/README.md",
-    "termsOfServiceURL": "https://github.com/ahiwey/commit-migration/blob/main/README.md",
+    "websiteURL": "https://github.com/ahiwey/CommitMigration",
+    "privacyPolicyURL": "https://github.com/ahiwey/CommitMigration/blob/main/README.md",
+    "termsOfServiceURL": "https://github.com/ahiwey/CommitMigration/blob/main/README.md",
     "defaultPrompt": [
       "Apply commit 45959162 to the current Android branch",
       "Analyze the latest 3 commits from origin/feature_x for migration",
