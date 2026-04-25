@@ -1,0 +1,30 @@
+name: Python Validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Compile Python sources
+        run: |
+          python - <<'PY'
+          import py_compile
+          from pathlib import Path
+          for path in Path("src/commit_migration").rglob("*.py"):
+              py_compile.compile(str(path), doraise=True)
+          print("py_compile_ok")
+          PY

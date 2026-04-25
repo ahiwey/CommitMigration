@@ -1,0 +1,11 @@
+{
+  "package_roots": {
+    "com/qcwireless/smart": "com/fitpaddy/smart"
+  },
+  "path_overrides": {
+    "app/src/main/java/com/source/OldSettingItem.kt": "app/src/main/java/com/target/NewSettingItem.kt"
+  },
+  "resource_name_map": {
+    "old_ring_primary": "ring_main"
+  }
+}

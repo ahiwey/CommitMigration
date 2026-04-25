@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "commit-migration": {
+      "command": "python",
+      "args": [
+        "-m",
+        "commit_migration.mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "../../src"
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ahiwey/commit-migration/schemas/mapping_hints.schema.json",
+  "title": "Commit Migration Mapping Hints",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "package_roots": {
+      "type": "object",
+      "description": "Map source package root paths to target package root paths.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "path_overrides": {
+      "type": "object",
+      "description": "Map a source relative path to an explicit target relative path.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "resource_name_map": {
+      "type": "object",
+      "description": "Map source Android resource names to target resource names.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

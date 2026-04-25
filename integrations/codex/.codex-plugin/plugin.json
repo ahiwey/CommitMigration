@@ -1,0 +1,46 @@
+{
+  "name": "commit-migration",
+  "version": "0.1.0",
+  "description": "Analyze Android commit or branch changes and help AI apply equivalent changes to the current branch with package, class, and resource-aware adaptation.",
+  "author": {
+    "name": "Commit Migration Maintainers",
+    "email": "ahiwey@users.noreply.github.com",
+    "url": "https://github.com/ahiwey"
+  },
+  "homepage": "https://github.com/ahiwey/commit-migration",
+  "repository": "https://github.com/ahiwey/commit-migration",
+  "license": "MIT",
+  "keywords": [
+    "android",
+    "commit",
+    "migration",
+    "branch",
+    "porting",
+    "mcp"
+  ],
+  "skills": "../skills/",
+  "mcpServers": "../.mcp.json",
+  "interface": {
+    "displayName": "Commit Migration",
+    "shortDescription": "Port Android commits across branches with mapping-aware analysis",
+    "longDescription": "Use Commit Migration to analyze Android commits, commit ranges, and branch diffs, map package and file changes onto the current repository, surface resource candidates, and generate the follow-up checks an AI agent should use before finalizing a branch migration.",
+    "developerName": "Commit Migration Maintainers",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/ahiwey/commit-migration",
+    "privacyPolicyURL": "https://github.com/ahiwey/commit-migration/blob/main/README.md",
+    "termsOfServiceURL": "https://github.com/ahiwey/commit-migration/blob/main/README.md",
+    "defaultPrompt": [
+      "Apply commit 45959162 to the current Android branch",
+      "Analyze the latest 3 commits from origin/feature_x for migration",
+      "Map package and resource changes from commit range A..B"
+    ],
+    "brandColor": "#1F6FEB",
+    "composerIcon": "../assets/commit-migration-small.svg",
+    "logo": "../assets/commit-migration.svg",
+    "screenshots": []
+  }
+}

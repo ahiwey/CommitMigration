@@ -1,0 +1,13 @@
+{
+  "package_roots": {
+    "com/qcwireless/smart": "com/fitpaddy/smart",
+    "com/qcwireless/ring": "com/fitpaddy/ring"
+  },
+  "path_overrides": {
+    "app/src/main/java/com/qcwireless/smart/ui/base/view/OldSettingItem.kt": "app/src/main/java/com/fitpaddy/smart/ui/base/view/QSettingItem.kt"
+  },
+  "resource_name_map": {
+    "old_ring_primary": "ring_main",
+    "source_btn_bg": "profile_btn_bg"
+  }
+}
