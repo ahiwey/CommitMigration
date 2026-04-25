@@ -2,38 +2,72 @@
 
 Initial public release of `Commit Migration`.
 
+`Commit Migration` is an Android-focused toolkit for analyzing commit, range, and branch changes before porting them across branches, brand forks, or product variants.
+
 ## Highlights
 
-- Added an Android-focused commit migration workflow for AI-assisted branch porting
-- Shaped the repository as a generic toolkit first, with Codex plugin and skill files kept in an optional integration layer
-- Added a strongly-triggered skill for requests like applying a commit or branch changes to the current branch
-- Added a shared Python analyzer for:
+- Added a generic Python package and CLI for Android commit migration analysis.
+- Added commit selection support for:
   - single commits
   - multiple commits
-  - commit ranges
+  - commit ranges such as `A..B`
   - branch diffs
   - recent commits from a branch
-- Added Android-aware mapping support for:
+- Added Android-aware mapping analysis for:
   - package roots
   - file paths
-  - resources under `res/`
+  - resource names
   - values-based resources in `values/*.xml`
 - Added Android follow-up generation for:
   - manifest references
   - XML component wiring
-  - providers and authorities
+  - navigation and provider references
   - imports and fully qualified names
   - reflection, routing, and resource-chain checks
-- Added MCP server entry points for read-only migration analysis tools
-- Added CLI commands:
-  - `analyze`
-  - `init-hints`
-  - `doctor`
-- Added schema, examples, publishing docs, contribution docs, and GitHub templates
+- Added repository hints support through `.commit-migration/mapping_hints.json`.
+- Added optional MCP support for structured AI tool integration.
+- Added an optional Codex integration layer with plugin manifest, skill, and MCP registration.
+
+## Core Commands
+
+```powershell
+commit-migration analyze --repo <android-repo> --commit <sha>
+commit-migration analyze --repo <android-repo> --range A..B
+commit-migration analyze --repo <android-repo> --branch <branch> --recent 3
+commit-migration init-hints --repo <android-repo>
+commit-migration doctor --repo <android-repo>
+```
+
+## Default Behavior
+
+- Works only on the current branch working tree by default.
+- Does not modify the source branch by default.
+- Does not automatically `checkout`, `cherry-pick`, or `rebase`.
+- Prefers equivalent migration plus adaptation over blind patch replay.
+
+## Installation
+
+Base package:
+
+```powershell
+pip install -e .
+```
+
+Optional MCP support:
+
+```powershell
+pip install -e ".[mcp]"
+```
+
+## Scope
+
+- Android projects only
+- Java and Kotlin source trees
+- `res/`, `AndroidManifest.xml`, navigation XML, provider and authority references
+- Analysis-first workflow, not blind patch application
 
 ## Notes
 
-- Current scope is Android only
-- The tool is analysis-first and does not blindly apply patches
-- Default behavior is to work only on the current branch working tree and avoid modifying the source branch
-- The default hints location is `.commit-migration/mapping_hints.json`, while legacy Codex-oriented hint paths remain supported
+- The default hints location is `.commit-migration/mapping_hints.json`.
+- Legacy Codex-oriented hint paths are still supported for compatibility.
+- The Codex-facing plugin and skill bundle is available under `integrations/codex/`.
